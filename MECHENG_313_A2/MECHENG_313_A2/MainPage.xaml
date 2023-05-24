@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MECHENG_313_A2.MainPage">
+
+    <StackLayout>
+        <Frame BackgroundColor="#2196F3" Padding="24" CornerRadius="0">
+            <Label Text="Welcome to Xamarin.Forms!" HorizontalTextAlignment="Center" TextColor="White" FontSize="36"/>
+        </Frame>
+        <Label Text="Start developing now" FontSize="Title" Padding="30,10,30,10"/>
+        <Label Text="Make changes to your XAML file and save to see your UI update in the running app with XAML Hot Reload. Give it a try!" FontSize="16" Padding="30,0,30,0"/>
+        <Label FontSize="16" Padding="30,24,30,0">
+            <Label.FormattedText>
+                <FormattedString>
+                    <FormattedString.Spans>
+                        <Span Text="Learn more at "/>
+                        <Span Text="https://aka.ms/xamarin-quickstart" FontAttributes="Bold"/>
+                    </FormattedString.Spans>
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+        <Label Text="Or if you are interested in MAUI - the official successor to Xamarin, check:" FontSize="16" Padding="30,20,30,0"/>
+        <Label FontSize="16" Padding="30,0,30,0">
+            <Label.FormattedText>
+                <FormattedString>
+                    <FormattedString.Spans>
+                        <Span Text="https://dotnet.microsoft.com/en-us/apps/maui" FontAttributes="Bold"/>
+                    </FormattedString.Spans>
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+
+        <Label Text="Now select one to run your assignment task:" HorizontalTextAlignment="Center" FontSize="24" Margin="0,50,0,0"/>
+        <Button Text="Task 2"
+                Clicked="OnTask2Clicked"
+                HorizontalOptions="Center"
+                Margin="0,10"/>
+
+        <Button Text="Task 3"
+                Clicked="OnTask3Clicked"
+                HorizontalOptions="Center" />
+    </StackLayout>
+
+</ContentPage>

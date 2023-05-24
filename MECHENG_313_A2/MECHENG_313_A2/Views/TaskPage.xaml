@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MECHENG_313_A2.Views.TaskPage">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="223" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+
+                <StackLayout Grid.Column="0" Spacing="20" Margin="10">
+                    <StackLayout Orientation="Horizontal" VerticalOptions="FillAndExpand" HorizontalOptions="Center">
+                        <StackLayout VerticalOptions="Center">
+                            <Label Text="Traffic Light" HorizontalTextAlignment="Center"/>
+                            <Image x:Name="TrafficLightImage"  Source="traffic_light_blank.png" HeightRequest="80"/>
+                        </StackLayout>
+                    </StackLayout>
+
+                    <StackLayout VerticalOptions="End" Spacing="15">
+                        <StackLayout Orientation="Horizontal" Spacing="10">
+                            <Button x:Name="ConfigButton" Text="Config" Clicked="OnConfigButtonClicked"/>
+                            <Button x:Name="TickButton" Text="Tick" Clicked="OnTickButtonClicked" />
+                            <Button x:Name="StartButton" Text="Start" Clicked="OnStartButtonClicked"/>
+                            <Button x:Name="DetectSerialPortsButton" Text="Detect Serial Ports" Clicked="OnDetectSerialPortsButtonClicked" />
+
+                        </StackLayout>
+                        <StackLayout x:Name="ConfigPanel" Spacing="10">
+                            <StackLayout Orientation="Vertical" >
+                                <Label Text="Red light length (ms):" VerticalOptions="Center" />
+                                <Entry x:Name="RedLengthEntry" Placeholder="Enter red light length" Text="1000" Keyboard="Numeric"/>
+                            </StackLayout>
+                            <StackLayout Orientation="Vertical" >
+                                <Label Text="Green light length (ms):" VerticalOptions="Center" />
+                                <Entry x:Name="GreenLengthEntry" Placeholder="Enter green light length" Text="1000" Keyboard="Numeric"/>
+                            </StackLayout>
+                            <Button x:Name="SaveButton" Text="Save" Clicked="OnSaveButtonClicked"/>
+                        </StackLayout>
+                    </StackLayout>
+                </StackLayout>
+
+                <StackLayout Grid.Column="1" Margin="10">
+                    <ListView x:Name="LogListView"
+                              ItemsSource="{Binding LogEntries}"/>
+
+                    <StackLayout>
+                        <Label x:Name="LogFilePathLabel" Text="No log file opened" Margin="0,10"/>
+                        <Button x:Name="OpenLogFileButton" Text="Open Log File" Clicked="OnOpenLogFileClicked" />
+                    </StackLayout>
+                </StackLayout>
+            </Grid>
+
+
+            <StackLayout Grid.Row="1" Margin="10" >
+                <StackLayout Orientation="Horizontal" Margin="0,0,0,10" Spacing="10">
+                    <Label  x:Name="SerialLabel"
+                            VerticalOptions="Center"
+                            Text="Serial Monitor" />
+                    <Picker x:Name="SerialPortPicker" 
+                            WidthRequest="150"
+                            VerticalOptions="Center"
+                            SelectedIndexChanged="OnSerialPortPickerSelectedIndexChanged"/>
+                    <Entry x:Name="BaudRate" 
+                           VerticalOptions="Center"
+                           Placeholder="Baud rate" 
+                           WidthRequest="100"
+                           Text="9600"
+                           Keyboard="Numeric"/>
+                    <Button x:Name="SerialOpenButton" 
+                            VerticalOptions="Center"
+                            Text="Open" 
+                            Clicked="OnSerialOpenButtonClicked"/>
+                </StackLayout>
+                <Editor x:Name="SerialMonitor"
+                        Placeholder="Waiting for serial input..."
+                        HeightRequest="150"
+                        IsReadOnly="True"/>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
