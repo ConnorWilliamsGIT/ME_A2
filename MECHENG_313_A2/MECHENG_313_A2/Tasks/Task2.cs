@@ -48,23 +48,27 @@ namespace MECHENG_313_A2.Tasks
         private void GoToGreen(DateTime timeStamp)
         {
             _taskPage.SetTrafficLightState(TrafficLightState.Green);
+            SetSerialState(TrafficLightState.Green);
             log("Traffic light changed to green");
         }
         private void GoToRed(DateTime timeStamp)
         {
             _taskPage.SetTrafficLightState(TrafficLightState.Red);
+            SetSerialState(TrafficLightState.Red);
             log("Traffic light changed to red");
         }
 
         private void GoToYellow(DateTime timeStamp)
         {
             _taskPage.SetTrafficLightState(TrafficLightState.Yellow);
+            SetSerialState(TrafficLightState.Yellow);
             log("Traffic light changed to yellow");
         }
 
         private void GoToBlack(DateTime timeStamp)
         {
             _taskPage.SetTrafficLightState(TrafficLightState.None);
+            SetSerialState(TrafficLightState.None);
             log("Traffic light changed to black");
         }
         
@@ -153,6 +157,7 @@ namespace MECHENG_313_A2.Tasks
         {
             fsm.SetCurrentState(states[1]);
             _taskPage.SetTrafficLightState(TrafficLightState.Green);
+            SetSerialState(TrafficLightState.Green);
             //log that the traffic light has started and the time it started
             log("Traffic light started");
         }
@@ -182,6 +187,11 @@ namespace MECHENG_313_A2.Tasks
                 }
             }));
             actionThread.Start();
+        }
+        
+        private async void SetSerialState(TrafficLightState state)
+        {
+            _taskPage.SerialPrint(DateTime.Now, await serialInterface.SetState(state) + "\n");
         }
     }
 }
