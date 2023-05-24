@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using MECHENG_313_A2.Serial;
 
@@ -47,20 +48,24 @@ namespace MECHENG_313_A2.Tasks
         private void GoToGreen(DateTime timeStamp)
         {
             _taskPage.SetTrafficLightState(TrafficLightState.Green);
+            log("Traffic light changed to green");
         }
         private void GoToRed(DateTime timeStamp)
         {
             _taskPage.SetTrafficLightState(TrafficLightState.Red);
+            log("Traffic light changed to red");
         }
 
         private void GoToYellow(DateTime timeStamp)
         {
             _taskPage.SetTrafficLightState(TrafficLightState.Yellow);
+            log("Traffic light changed to yellow");
         }
 
         private void GoToBlack(DateTime timeStamp)
         {
             _taskPage.SetTrafficLightState(TrafficLightState.None);
+            log("Traffic light changed to black");
         }
         
         public void ConfigLightLength(int redLength, int greenLength)
@@ -72,11 +77,23 @@ namespace MECHENG_313_A2.Tasks
         {
             try
             { 
-                configRequested = fsm.ProcessEvent(events[1]) != states[3];
+                if(fsm.GetCurrentState() == states[3] || fsm.GetCurrentState() == states[4])
+                {
+                    log("Already in config mode");
+                    return true;
+                }
+                if (fsm.ProcessEvent(events[1]) != states[3])
+                {
+                    configRequested = true;
+                    log("Config mode requested");
+                }else
+                {
+                    log("Entered config mode");
+                }
             }
             catch (Exception e)
             {
-                // todo log error
+                log("Error entering config mode: " + e.Message);
                 return false;
             }
 
@@ -85,11 +102,13 @@ namespace MECHENG_313_A2.Tasks
 
         public void ExitConfigMode()
         {
-            configRequested = false;
             if (fsm.GetCurrentState() == states[0])
             {
+                log("already in normal mode");
                 return;
             }
+            log(configRequested ? "No longer waiting for config" : "Config mode exited");
+            configRequested = false;
             fsm.ProcessEvent(events[1]);
         }
 
@@ -104,6 +123,7 @@ namespace MECHENG_313_A2.Tasks
             // if(!File.Exists(filePath))
             // {
             //     File.Create(filePath);
+            //     log("created log file");
             // }
             // string text = File.ReadAllText(filePath);
             // return text ?? "log file empty";
@@ -114,10 +134,11 @@ namespace MECHENG_313_A2.Tasks
             try
             {
                 serialInterface.OpenPort(serialPort, baudRate);
+                log("Opened port " + serialPort + " at " + baudRate.ToString() + " baud");
             }
             catch (Exception e)
             {
-                //todo add log for this
+                log("Error opening port: " + e.Message);
                 return false;
             }
             return true;
@@ -132,14 +153,35 @@ namespace MECHENG_313_A2.Tasks
         {
             fsm.SetCurrentState(states[1]);
             _taskPage.SetTrafficLightState(TrafficLightState.Green);
+            //log that the traffic light has started and the time it started
+            log("Traffic light started");
         }
+        
 
         public void Tick()
         {
-            if (fsm.ProcessEvent(configRequested ? "tick-c" : "tick") == states[3])
+            string tempState = fsm.ProcessEvent(configRequested ? "tick-c" : "tick"); 
+            if (tempState == states[3] && configRequested)
             {
+                log("entered config mode");
                 configRequested = false;
-            };
+            }
+            else
+            {
+                log("entered state: " + tempState);
+            }
+        }
+        
+        private void log(string message)
+        {
+            Thread actionThread = new Thread(new ThreadStart(() =>
+            {
+                lock (_taskPage)
+                {
+                    _taskPage.AddLogEntry($"{DateTime.Now.ToString():yyyy-MM-dd HH:mm:ss}: {message}");
+                }
+            }));
+            actionThread.Start();
         }
     }
 }
