@@ -18,11 +18,12 @@ namespace MECHENG_313_A2.Tasks
         private MockSerialInterface serialInterface = new MockSerialInterface();
         private List<string> states = new List<string> {"red", "green", "yellow", "configYellow", "configBlack"};
         private List<string> events = new List<string> {"tick", "config", "tick-c"};
-        private bool configRequested = false;
-        private FiniteStateMachine fsm = new FiniteStateMachine();
-        
+        private bool configRequested;
+        private FiniteStateMachine fsm;
+
         public Task2()
         {
+            FiniteStateMachine fsm = new FiniteStateMachine(Log);
             foreach (string state in states)
             {
                 fsm.addState(state);
@@ -49,27 +50,27 @@ namespace MECHENG_313_A2.Tasks
         {
             _taskPage.SetTrafficLightState(TrafficLightState.Green);
             SetSerialState(TrafficLightState.Green);
-            log("Traffic light changed to green");
+            Log("Traffic light changed to green");
         }
         private void GoToRed(DateTime timeStamp)
         {
             _taskPage.SetTrafficLightState(TrafficLightState.Red);
             SetSerialState(TrafficLightState.Red);
-            log("Traffic light changed to red");
+            Log("Traffic light changed to red");
         }
 
         private void GoToYellow(DateTime timeStamp)
         {
             _taskPage.SetTrafficLightState(TrafficLightState.Yellow);
             SetSerialState(TrafficLightState.Yellow);
-            log("Traffic light changed to yellow");
+            Log("Traffic light changed to yellow");
         }
 
         private void GoToBlack(DateTime timeStamp)
         {
             _taskPage.SetTrafficLightState(TrafficLightState.None);
             SetSerialState(TrafficLightState.None);
-            log("Traffic light changed to black");
+            Log("Traffic light changed to black");
         }
         
         public void ConfigLightLength(int redLength, int greenLength)
@@ -83,21 +84,21 @@ namespace MECHENG_313_A2.Tasks
             { 
                 if(fsm.GetCurrentState() == states[3] || fsm.GetCurrentState() == states[4])
                 {
-                    log("Already in config mode");
+                    Log("Already in config mode");
                     return true;
                 }
                 if (fsm.ProcessEvent(events[1]) != states[3])
                 {
                     configRequested = true;
-                    log("Config mode requested");
+                    Log("Config mode requested");
                 }else
                 {
-                    log("Entered config mode");
+                    Log("Entered config mode");
                 }
             }
             catch (Exception e)
             {
-                log("Error entering config mode: " + e.Message);
+                Log("Error entering config mode: " + e.Message);
                 return false;
             }
 
@@ -108,10 +109,10 @@ namespace MECHENG_313_A2.Tasks
         {
             if (fsm.GetCurrentState() == states[0])
             {
-                log("already in normal mode");
+                Log("already in normal mode");
                 return;
             }
-            log(configRequested ? "No longer waiting for config" : "Config mode exited");
+            Log(configRequested ? "No longer waiting for config" : "Config mode exited");
             configRequested = false;
             fsm.ProcessEvent(events[1]);
         }
@@ -138,11 +139,11 @@ namespace MECHENG_313_A2.Tasks
             try
             {
                 serialInterface.OpenPort(serialPort, baudRate);
-                log("Opened port " + serialPort + " at " + baudRate.ToString() + " baud");
+                Log("Opened port " + serialPort + " at " + baudRate.ToString() + " baud");
             }
             catch (Exception e)
             {
-                log("Error opening port: " + e.Message);
+                Log("Error opening port: " + e.Message);
                 return false;
             }
             return true;
@@ -159,7 +160,7 @@ namespace MECHENG_313_A2.Tasks
             _taskPage.SetTrafficLightState(TrafficLightState.Green);
             SetSerialState(TrafficLightState.Green);
             //log that the traffic light has started and the time it started
-            log("Traffic light started");
+            Log("Traffic light started");
         }
         
 
@@ -168,16 +169,16 @@ namespace MECHENG_313_A2.Tasks
             string tempState = fsm.ProcessEvent(configRequested ? "tick-c" : "tick"); 
             if (tempState == states[3] && configRequested)
             {
-                log("entered config mode");
+                Log("entered config mode");
                 configRequested = false;
             }
             else
             {
-                log("entered state: " + tempState);
+                Log("entered state: " + tempState);
             }
         }
         
-        private void log(string message)
+        private void Log(string message)
         {
             Thread actionThread = new Thread(new ThreadStart(() =>
             {

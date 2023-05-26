@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using Xamarin.Forms;
 
 namespace MECHENG_313_A2.Tasks
 {
@@ -9,14 +10,16 @@ namespace MECHENG_313_A2.Tasks
     {
         //table stores the next action and delegate to the action method to take during transition
         private Dictionary<string, Dictionary<string, (TimestampedAction action, string nextState)>> fsTable;
-
         private string currentState;
+        private Action<string> Log;
+        
         //define constructor
-        public FiniteStateMachine() // string startingState
+        public FiniteStateMachine(Action<string> log) // string startingState
         {
             //set current state and create the table
             // currentState = startingState;
             fsTable = new Dictionary<string, Dictionary<string, (TimestampedAction action, string nextState)>>();
+            Log = log;
         }
 
         public void addState(string state)
@@ -26,9 +29,11 @@ namespace MECHENG_313_A2.Tasks
             {
                 //if not create the new state with a blank dictionary of actions
                 fsTable.Add(state, new Dictionary<string, (TimestampedAction action, string nextState)>());
+                Log($"State '{state}' has been added");
             }
             else
             {
+                Log($"State '{state}' already exists");
                 //todo log that the state already exists
             }
 
@@ -56,7 +61,7 @@ namespace MECHENG_313_A2.Tasks
             }
             
         }
-
+        
         public void createEvent(string state, string eventTrigger, TimestampedAction action, string nextState)
         {
             //check if the state exists
@@ -114,6 +119,7 @@ namespace MECHENG_313_A2.Tasks
             if (fsTable.ContainsKey(state) == false)
             {
                 //todo log that the state doesnt exist
+                
                 return;
             }
             if (fsTable[state].ContainsKey(eventTrigger))
