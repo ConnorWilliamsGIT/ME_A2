@@ -11,6 +11,7 @@ namespace MECHENG_313_A2.Tasks
         private Dictionary<string, Dictionary<string, (TimestampedAction action, string nextState)>> fsTable;
 
         private string currentState;
+
         //define constructor
         public FiniteStateMachine() // string startingState
         {
@@ -20,7 +21,7 @@ namespace MECHENG_313_A2.Tasks
         }
 
         public void addState(string state)
-        {  
+        {
             //check if the state already exists
             if (fsTable.ContainsKey(state) == false)
             {
@@ -28,14 +29,15 @@ namespace MECHENG_313_A2.Tasks
                 fsTable.Add(state, new Dictionary<string, (TimestampedAction action, string nextState)>());
             }
         }
-        
+
         public void AddAction(string state, string eventTrigger, TimestampedAction action)
-        {   
+        {
             //check if the state exists
             if (fsTable.ContainsKey(state) == false)
             {
                 return;
             }
+
             //check if the action already exists on the state
             if (fsTable[state].ContainsKey(eventTrigger))
             {
@@ -46,9 +48,7 @@ namespace MECHENG_313_A2.Tasks
             {
                 //else create the new action with a null next state
                 fsTable[state].Add(eventTrigger, (action, null));
-                
             }
-            
         }
 
         public void createEvent(string state, string eventTrigger, TimestampedAction action, string nextState)
@@ -58,6 +58,7 @@ namespace MECHENG_313_A2.Tasks
             {
                 return;
             }
+
             //check if the action already exists on the state
             if (fsTable[state].ContainsKey(eventTrigger))
             {
@@ -68,7 +69,6 @@ namespace MECHENG_313_A2.Tasks
             {
                 //else create the new action with a null next state
                 fsTable[state].Add(eventTrigger, (action, nextState));
-                
             }
         }
 
@@ -79,6 +79,7 @@ namespace MECHENG_313_A2.Tasks
 
         public string ProcessEvent(string eventTrigger)
         {
+            //check if the event trigger exists and if the next state is not null
             if (!fsTable[currentState].ContainsKey(eventTrigger)) return currentState;
             if (fsTable[currentState][eventTrigger].nextState == null) return currentState;
             string current = currentState;
@@ -87,7 +88,7 @@ namespace MECHENG_313_A2.Tasks
             {
                 lock (current)
                 {
-                    fsTable[current][eventTrigger].action(DateTime.Now);    
+                    fsTable[current][eventTrigger].action(DateTime.Now);
                 }
             }));
             actionThread.Start();
@@ -108,6 +109,7 @@ namespace MECHENG_313_A2.Tasks
             {
                 return;
             }
+
             if (fsTable[state].ContainsKey(eventTrigger))
             {
                 //if it does then add the action and keep the current "next state"
